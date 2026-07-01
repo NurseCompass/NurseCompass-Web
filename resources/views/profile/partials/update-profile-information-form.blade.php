@@ -47,6 +47,21 @@
             @endif
         </div>
 
+        <div class="mt-4">
+            <x-input-label for="student_number" :value="__('Student Number')" />
+            <x-text-input id="student_number" type="text" class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed" :value="$user->student_number" disabled />
+        </div>
+
+        <div class="mt-4">
+            <x-input-label for="birthdate" :value="__('Birthdate')" />
+            <x-text-input id="birthdate" type="date" class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed" :value="$user->birthdate" disabled />
+        </div>
+
+        <div class="mt-4">
+            <x-input-label for="year_level" :value="__('Year Level')" />
+            <x-text-input id="year_level" type="text" class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed" :value="$user->year_level" disabled />
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
