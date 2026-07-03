@@ -12,7 +12,6 @@ class QuizController extends Controller
 {
     public function showQuiz($slug)
     {
-        // 1. Map the URL slug to the database section name
         $sections = [
             'academic-performance' => 'Academic Performance',
             'self-efficacy'        => 'Self-Efficacy',
@@ -20,21 +19,29 @@ class QuizController extends Controller
             'motivation'           => 'Motivation',
         ];
 
-        // 2. If the user types a random URL, throw a 404 error
         if (!array_key_exists($slug, $sections)) {
             abort(404);
         }
 
         $dbSection = $sections[$slug];
-        $yearLevel = Auth::user()->year_level; // Automatically gets '3rd Year' or '4th Year'
+        $user = auth()->user();
 
-        // 3. Fetch the correct questions
-        $questions = Question::where('year_level', $yearLevel)
+        // THE NEW BLOCKADE: Check if they already took this exact section
+        $alreadyFinished = QuizResult::where('user_id', $user->id)
+            ->where('section', $dbSection)
+            ->exists();
+
+        if ($alreadyFinished) {
+            // Kick them back to the dashboard with an error message
+            return redirect('/dashboard')->with('error', 'You have already completed the ' . $dbSection . ' assessment.');
+        }
+
+        // 3. Fetch the correct questions (Only runs if they haven't taken it)
+        $questions = Question::where('year_level', $user->year_level)
             ->where('section', $dbSection)
             ->with('options')
             ->get();
 
-        // 4. Return a generic view (we will rename your blade file next)
         return view('quiz.show', compact('questions', 'dbSection'));
     }
 
