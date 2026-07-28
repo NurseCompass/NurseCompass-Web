@@ -10,7 +10,32 @@ use Illuminate\Support\Facades\Auth; // Add this
 
 class QuizController extends Controller
 {
-    public function showQuiz($slug)
+    public function takeQuiz()
+    {
+        $user = request()->user();
+
+        // 1. Check if they already took the assessment
+        $alreadyFinished = QuizResult::where('user_id', $user->id)
+            ->where('year_level', $user->year_level)
+            ->exists();
+
+        if ($alreadyFinished) {
+            return redirect('/dashboard')->with('error', 'You have already completed your assessment for this year.');
+        }
+
+        // 2. Fetch ALL questions for their year level
+        $questions = Question::where('year_level', $user->year_level)
+            ->with('options')
+            ->get();
+
+        // 3. Group the questions by section so the Blade file can organize them
+        $groupedQuestions = $questions->groupBy('section');
+
+        // 4. Send them to the single-page form
+        return view('quiz.show', compact('groupedQuestions'));
+    }
+
+    public function showQuiz(string $slug)
     {
         $sections = [
             'academic-performance' => 'Academic Performance',
@@ -24,7 +49,7 @@ class QuizController extends Controller
         }
 
         $dbSection = $sections[$slug];
-        $user = auth()->user();
+        $user = request()->user();
 
         // THE NEW BLOCKADE: Check if they already took this exact section
         $alreadyFinished = QuizResult::where('user_id', $user->id)
@@ -43,6 +68,7 @@ class QuizController extends Controller
             ->get();
 
         return view('quiz.show', compact('questions', 'dbSection'));
+        dd($questions->toArray());
     }
 
     public function submitQuiz(Request $request)

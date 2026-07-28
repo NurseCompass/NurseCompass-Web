@@ -16,7 +16,7 @@ Route::middleware(['auth'])->group(function () {
 
     // --- DASHBOARD ROUTE ---
     Route::get('/dashboard', function () {
-        $user = auth()->user();
+        $user = request()->user();
 
         // 1. Fetch their past results
         $results = QuizResult::where('user_id', $user->id)
@@ -49,8 +49,15 @@ Route::middleware(['auth'])->group(function () {
 
 
     // --- QUIZ ROUTES ---
+    Route::get('/quiz/take', [App\Http\Controllers\QuizController::class, 'takeQuiz']);
+    Route::post('/submit-quiz', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
     Route::get('/quiz/{slug}', [QuizController::class, 'showQuiz']);
     Route::post('/quiz/submit', [QuizController::class, 'submitQuiz']);
+
+    Route::get('/study-materials', [App\Http\Controllers\ReviewerController::class, 'index'])->name('reviewers.index');
+    Route::post('/study-materials', [App\Http\Controllers\ReviewerController::class, 'store'])->name('reviewers.store');
+    Route::get('/study-materials/{reviewer}/edit', [App\Http\Controllers\ReviewerController::class, 'edit'])->name('reviewers.edit');
+    Route::put('/study-materials/{reviewer}', [App\Http\Controllers\ReviewerController::class, 'update'])->name('reviewers.update');
 
 
     // --- PROFILE ROUTES ---

@@ -25,7 +25,8 @@ class User extends Authenticatable
         'student_number',
         'birthdate',
         'year_level',
-        'role', // <-- Add this line
+        'role',
+        'section',
     ];
 
     /**
