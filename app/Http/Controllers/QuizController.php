@@ -68,7 +68,6 @@ class QuizController extends Controller
             ->get();
 
         return view('quiz.show', compact('questions', 'dbSection'));
-        dd($questions->toArray());
     }
 
     public function submitQuiz(Request $request)

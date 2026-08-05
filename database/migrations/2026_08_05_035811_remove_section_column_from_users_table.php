@@ -12,15 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Adds the section column right after the email column
-            $table->string('section')->nullable()->after('email');
+            $table->dropColumn('section');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('section');
+            $table->string('section')->nullable();
         });
     }
 };

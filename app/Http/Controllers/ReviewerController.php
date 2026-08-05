@@ -14,14 +14,21 @@ class ReviewerController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'faculty') {
+            // Faculty see all the materials they uploaded
             $myReviewers = Reviewer::where('user_id', $user->id)->latest()->get();
         } else {
-            $studentSection = $user->section ?? 'None';
+            // STUDENTS: Get ALL the names of the sections this student is enrolled in
+            $studentSectionNames = $user->enrolledSections->pluck('name')->toArray();
 
             $myReviewers = Reviewer::where('user_id', $user->id)
-                ->orWhere(function ($query) use ($studentSection) {
+                ->orWhere(function ($query) use ($studentSectionNames) {
                     $query->where('is_faculty_upload', true)
-                          ->whereJsonContains('target_sections', $studentSection);
+                          ->where(function($q) use ($studentSectionNames) {
+                              // Check if the uploaded material's target_sections matches ANY of the student's sections
+                              foreach ($studentSectionNames as $sectionName) {
+                                  $q->orWhereJsonContains('target_sections', $sectionName);
+                              }
+                          });
                 })
                 ->latest()
                 ->get();

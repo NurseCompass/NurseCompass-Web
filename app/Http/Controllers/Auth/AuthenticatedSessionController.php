@@ -25,10 +25,25 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Check the logged-in user's role
+        // Clean the role by making it lowercase and removing extra spaces
+        $role = strtolower(trim($request->user()->role));
+
+        
+
+        // Direct traffic based on role (STRICT REDIRECT)
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($role === 'faculty') {
+            return redirect()->route('faculty.dashboard');
+        } elseif ($role === 'department_head') {
+            return redirect()->route('department.dashboard');
+        }
+
+        // Default fallback (Students)
+        return redirect()->route('dashboard');
     }
 
     /**
