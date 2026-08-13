@@ -23,6 +23,16 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // --- STUDY MATERIALS (Moved here so Faculty can access!) ---
+    Route::get('/study-materials', [App\Http\Controllers\ReviewerController::class, 'index'])->name('reviewers.index');
+    Route::post('/study-materials', [App\Http\Controllers\ReviewerController::class, 'store'])->name('reviewers.store');
+    Route::get('/study-materials/{reviewer}/edit', [App\Http\Controllers\ReviewerController::class, 'edit'])->name('reviewers.edit');
+    Route::put('/study-materials/{reviewer}', [App\Http\Controllers\ReviewerController::class, 'update'])->name('reviewers.update');
+
+    // --- AI CHATBOT / STUDY ASSISTANT ---
+    Route::get('/study-assistant', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
+    Route::post('/study-assistant/send', [App\Http\Controllers\ChatbotController::class, 'sendMessage'])->name('chatbot.send');
+
 });
 
 
@@ -63,12 +73,6 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
     Route::post('/submit-quiz', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
     Route::get('/quiz/{slug}', [App\Http\Controllers\QuizController::class, 'showQuiz']);
     Route::post('/quiz/submit', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
-
-    // --- STUDY MATERIALS ---
-    Route::get('/study-materials', [App\Http\Controllers\ReviewerController::class, 'index'])->name('reviewers.index');
-    Route::post('/study-materials', [App\Http\Controllers\ReviewerController::class, 'store'])->name('reviewers.store');
-    Route::get('/study-materials/{reviewer}/edit', [App\Http\Controllers\ReviewerController::class, 'edit'])->name('reviewers.edit');
-    Route::put('/study-materials/{reviewer}', [App\Http\Controllers\ReviewerController::class, 'update'])->name('reviewers.update');
 
 });
 

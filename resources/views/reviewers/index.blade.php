@@ -16,6 +16,16 @@
                     {{ session('success') }}
                 </div>
             @endif
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                    <p class="font-bold mb-2">Oops! Something went wrong:</p>
+                    <ul class="list-disc list-inside ml-4">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <!-- Page Action Bar (Where the button actually works safely!) -->
             <div class="flex justify-between items-center mb-6">

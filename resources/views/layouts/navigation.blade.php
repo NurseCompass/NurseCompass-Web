@@ -30,6 +30,9 @@
                         <x-nav-link :href="route('faculty.dashboard')" :active="request()->routeIs('faculty.dashboard')">
                             {{ __('Faculty Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('reviewers.index')" :active="request()->routeIs('reviewers.*')">
+                            {{ __('Study Materials') }}
+                        </x-nav-link>
                     @elseif(Auth::user()->role === 'department_head')
                         <x-nav-link :href="route('department.dashboard')" :active="request()->routeIs('department.dashboard')">
                             {{ __('Dept Head Dashboard') }}
@@ -101,6 +104,9 @@
             @elseif(Auth::user()->role === 'faculty')
                 <x-responsive-nav-link :href="route('faculty.dashboard')" :active="request()->routeIs('faculty.dashboard')">
                     {{ __('Faculty Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('reviewers.index')" :active="request()->routeIs('reviewers.*')">
+                    {{ __('Study Materials') }}
                 </x-responsive-nav-link>
             @elseif(Auth::user()->role === 'department_head')
                 <x-responsive-nav-link :href="route('department.dashboard')" :active="request()->routeIs('department.dashboard')">
