@@ -12,7 +12,13 @@ class QuizController extends Controller
 {
     public function takeQuiz()
     {
-        $user = request()->user();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // If the logged-in user is a faculty member, block them from taking quizzes
+        if ($user->role === 'faculty') {
+            return redirect()->route('dashboard')->with('error', 'Faculty members cannot take student assessments.');
+        }
 
         // 1. Check if they already took the assessment
         $alreadyFinished = QuizResult::where('user_id', $user->id)

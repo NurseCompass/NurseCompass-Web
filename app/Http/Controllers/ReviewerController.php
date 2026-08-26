@@ -44,18 +44,16 @@ class ReviewerController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'required|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt|max:10240',
+            'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt,zip|max:307200',
             'target_sections' => 'nullable|array',
         ]);
 
-        // 1. Save the file to Laravel's storage
         $filePath = $request->file('file')->store('reviewers', 'public');
 
         /** @var \App\Models\User $user */
         $user = Auth::user();
         $isFaculty = $user->role === 'faculty';
 
-        // 2. Save the details to the MySQL Database
         $reviewer = Reviewer::create([
             'user_id' => $user->id,
             'title' => $request->title,
@@ -65,30 +63,21 @@ class ReviewerController extends Controller
             'target_sections' => $isFaculty ? $request->target_sections : null,
         ]);
 
-        // 3. --- NEW: MACHINE LEARNING TRIGGER ---
-        // Only send it to the AI if it's a Faculty upload (official study materials)
-        if ($isFaculty) {
-            try {
-                // Get the actual physical path of the file on your computer
-                $absolutePath = storage_path('app/public/' . $filePath);
+        try {
+            $absolutePath = storage_path('app/public/' . $filePath);
 
-                // Send a POST request with the file attached to your Python server 
-                // (Assuming Python will run locally on port 5000)
-                Http::timeout(10)->attach(
-                    'document',
-                    file_get_contents($absolutePath),
-                    $request->file('file')->getClientOriginalName()
-                )->post('http://127.0.0.1:5000/api/train-chatbot', [
-                    'reviewer_id' => $reviewer->id,
-                    'title' => $reviewer->title,
-                    'category' => $reviewer->category,
-                ]);
-            } catch (\Exception $e) {
-                // If Python is offline, don't crash Laravel! Just log it.
-                Log::error('ML Server is offline or failed: ' . $e->getMessage());
-            }
+            Http::timeout(300)->attach(
+                'document',
+                fopen($absolutePath, 'r'), 
+                $request->file('file')->getClientOriginalName()
+            )->post('http://127.0.0.1:5001/api/train-chatbot', [
+                'reviewer_id' => $reviewer->id,
+                'title' => $reviewer->title,
+                'category' => $reviewer->category,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ML Server is offline or failed: ' . $e->getMessage());
         }
-        // -----------------------------------------
 
         return redirect()->back()->with('success', 'Study material uploaded successfully and sent to AI for training!');
     }
