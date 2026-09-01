@@ -17,12 +17,12 @@ Route::get('/', function () {
 // GROUP 1: EVERYBODY (Students, Faculty, Admin)
 // ==========================================
 Route::middleware(['auth'])->group(function () {
-    
+
     // Everyone needs to be able to edit their own profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // --- STUDY MATERIALS (Moved here so Faculty can access!) ---
     Route::get('/study-materials', [App\Http\Controllers\ReviewerController::class, 'index'])->name('reviewers.index');
     Route::post('/study-materials', [App\Http\Controllers\ReviewerController::class, 'store'])->name('reviewers.store');
@@ -32,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
     // --- AI CHATBOT / STUDY ASSISTANT ---
     Route::get('/study-assistant', [App\Http\Controllers\ChatbotController::class, 'index'])->name('chatbot.index');
     Route::post('/study-assistant/send', [App\Http\Controllers\ChatbotController::class, 'sendMessage'])->name('chatbot.send');
-
 });
 
 
@@ -40,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
 // GROUP 2: STUDENTS ONLY
 // ==========================================
 Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
-    
+
     // --- STUDENT DASHBOARD ---
     Route::get('/dashboard', function () {
         $user = request()->user();
@@ -48,7 +47,7 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
             ->orderBy('created_at', 'desc')
             ->get();
         $completedSections = $results->pluck('section')->toArray();
-        
+
         return view('dashboard', compact('user', 'results', 'completedSections'));
     })->middleware(['verified'])->name('dashboard');
 
@@ -56,7 +55,7 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
     Route::get('/onboarding', function () {
         return view('onboarding');
     });
-    
+
     Route::post('/onboarding', function (\Illuminate\Http\Request $request) {
         $user = $request->user();
         $validated = $request->validate([
@@ -73,7 +72,6 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
     Route::post('/submit-quiz', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
     Route::get('/quiz/{slug}', [App\Http\Controllers\QuizController::class, 'showQuiz']);
     Route::post('/quiz/submit', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
-
 });
 
 // --- STUDENT ROUTES ---
@@ -97,15 +95,14 @@ Route::middleware(['auth', CheckRole::class . ':department_head'])->group(functi
 
 // --- ADMIN / SYSTEM ADMINISTRATOR ROUTES ---
 Route::middleware(['auth', App\Http\Middleware\CheckRole::class . ':admin'])->group(function () {
-    
+
     // The Admin Dashboard View
     Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard'); 
+        return view('admin.dashboard');
     })->name('admin.dashboard'); // <-- THIS IS THE MISSING PIECE!
 
     // The CSV Import Route
     Route::post('/admin/import-students', [App\Http\Controllers\AdminController::class, 'importStudents'])->name('admin.import.students');
-    
 });
 
 require __DIR__ . '/auth.php';
