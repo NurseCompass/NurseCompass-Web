@@ -13,7 +13,6 @@ class Reviewer extends Model
         'user_id',
         'title',
         'file_path',
-        'category',
         'is_faculty_upload',
         'target_sections', // ADDED THIS
     ];

@@ -82,4 +82,9 @@ class User extends Authenticatable
     {
         return strtolower(trim($this->role)) === strtolower(trim($role));
     }
+
+    public function handledSections()
+    {
+        return $this->belongsToMany(Section::class, 'faculty_section', 'user_id', 'section_id')->withTimestamps();
+    }
 }

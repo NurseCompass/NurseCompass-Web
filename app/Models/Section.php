@@ -30,4 +30,9 @@ class Section extends Model
     {
         return $this->belongsToMany(User::class, 'section_user', 'section_id', 'user_id')->withTimestamps();
     }
+
+    public function facultyMembers()
+    {
+        return $this->belongsToMany(User::class, 'faculty_section', 'section_id', 'user_id')->withTimestamps();
+    }
 }

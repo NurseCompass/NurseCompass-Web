@@ -1,47 +1,92 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign In | NurseCompass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+<body class="bg-white m-0 p-0 min-h-screen w-full flex flex-col justify-between font-sans">
+
+    <!-- Top Navigation Bar -->
+    <header class="w-full py-5 px-8 border-b border-slate-100 flex items-center justify-between bg-white shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-teal-600/20">
+                NC
+            </div>
+            <span class="text-xl font-black text-slate-900 tracking-tight">Nurse<span class="text-teal-600">Compass</span></span>
         </div>
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 hidden sm:block">Predictive Workforce Readiness System</span>
+    </header>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+    <!-- Main Section centered with ample spacing -->
+    <main class="w-full flex-grow flex items-center justify-center px-4 py-12 bg-slate-50/50">
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8 sm:p-10">
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <div class="mb-8">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Sign In</h2>
+                <p class="text-slate-500 text-sm mt-1">Access your nursing assessment and review portal.</p>
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+            <!-- Session Status -->
+            @if (session('status'))
+            <div class="mb-6 text-sm font-medium text-emerald-700 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                {{ session('status') }}
+            </div>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                @csrf
+
+                <!-- Email Address -->
+                <div>
+                    <label for="email" class="block font-bold text-xs uppercase tracking-wider text-slate-700 mb-2">Email Address</label>
+                    <input id="email" class="block w-full border border-slate-300 rounded-xl px-4 py-3.5 text-slate-900 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition shadow-sm outline-none text-sm font-medium" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="student@example.com" />
+                    @error('email')
+                    <p class="text-rose-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block font-bold text-xs uppercase tracking-wider text-slate-700 mb-2">Password</label>
+                    <input id="password" class="block w-full border border-slate-300 rounded-xl px-4 py-3.5 text-slate-900 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition shadow-sm outline-none text-sm font-medium" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+                    @error('password')
+                    <p class="text-rose-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="flex items-center justify-between text-sm pt-1">
+                    <label for="remember_me" class="inline-flex items-center cursor-pointer">
+                        <input id="remember_me" type="checkbox" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500 shadow-sm w-4 h-4" name="remember">
+                        <span class="ms-2 font-semibold text-slate-700 text-xs">Remember me</span>
+                    </label>
+
+                    @if (Route::has('password.request'))
+                    <a class="font-semibold text-xs text-teal-600 hover:text-teal-700 transition" href="{{ route('password.request') }}">
+                        Forgot password?
+                    </a>
+                    @endif
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-3">
+                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-teal-600/20 text-sm tracking-wide">
+                        Sign In to Portal
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
-</x-guest-layout>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-6 px-8 border-t border-slate-100 text-center text-xs text-slate-400 font-medium bg-white">
+        Universidad de Manila — College of Nursing &copy; {{ date('Y') }}
+    </footer>
+
+</body>
+
+</html>

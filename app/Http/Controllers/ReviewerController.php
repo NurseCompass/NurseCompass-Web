@@ -15,18 +15,20 @@ class ReviewerController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        $facultySections = collect();
+
         if ($user->role === 'faculty') {
-            // Faculty see all the materials they uploaded
             $myReviewers = Reviewer::where('user_id', $user->id)->latest()->get();
+            // Fetch sections assigned via the pivot table
+            $facultySections = $user->handledSections;
         } else {
-            // STUDENTS: Get ALL the names of the sections this student is enrolled in
+            // Student logic...
             $studentSectionNames = $user->enrolledSections->pluck('name')->toArray();
 
             $myReviewers = Reviewer::where('user_id', $user->id)
                 ->orWhere(function ($query) use ($studentSectionNames) {
                     $query->where('is_faculty_upload', true)
                         ->where(function ($q) use ($studentSectionNames) {
-                            // Check if the uploaded material's target_sections matches ANY of the student's sections
                             foreach ($studentSectionNames as $sectionName) {
                                 $q->orWhereJsonContains('target_sections', $sectionName);
                             }
@@ -36,14 +38,14 @@ class ReviewerController extends Controller
                 ->get();
         }
 
-        return view('reviewers.index', compact('myReviewers'));
+        return view('reviewers.index', compact('myReviewers', 'facultySections'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string',
+            // category validation removed
             'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt,zip|max:307200',
             'target_sections' => 'nullable|array',
         ]);
@@ -58,22 +60,22 @@ class ReviewerController extends Controller
             'user_id' => $user->id,
             'title' => $request->title,
             'file_path' => $filePath,
-            'category' => $request->category,
             'is_faculty_upload' => $isFaculty,
             'target_sections' => $isFaculty ? $request->target_sections : null,
         ]);
+
+        // ... Keep your existing try/catch block for the ML API here ...
 
         try {
             $absolutePath = storage_path('app/public/' . $filePath);
 
             Http::timeout(300)->attach(
                 'document',
-                fopen($absolutePath, 'r'), 
+                fopen($absolutePath, 'r'),
                 $request->file('file')->getClientOriginalName()
             )->post('http://127.0.0.1:5001/api/train-chatbot', [
                 'reviewer_id' => $reviewer->id,
                 'title' => $reviewer->title,
-                'category' => $reviewer->category,
             ]);
         } catch (\Exception $e) {
             Log::error('ML Server is offline or failed: ' . $e->getMessage());
@@ -105,13 +107,13 @@ class ReviewerController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string',
+            // category validation removed
             'target_sections' => 'nullable|array',
         ]);
 
         $reviewer->update([
             'title' => $request->title,
-            'category' => $request->category,
+            // category update removed completely
             'target_sections' => $user->role === 'faculty' ? $request->target_sections : null,
         ]);
 

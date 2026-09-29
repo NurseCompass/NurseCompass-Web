@@ -6,27 +6,25 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100">
+                <h3 class="text-2xl font-bold mb-4">Welcome, Administrator</h3>
+                <p class="text-gray-600 dark:text-gray-400">Use the navigation menu above to manage students, sections, faculty assignments, and deans.</p>
                 
-                <h3 class="text-2xl font-bold mb-4">Bulk Import Students</h3>
-                <p class="mb-6">Upload a CSV file from the Dean's list to instantly create accounts and assign sections.</p>
-                
-                @if(session('success'))
-                    <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50">{{ session('success') }}</div>
-                @endif
-
-                <form action="{{ route('admin.import.students') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label for="csv_file" class="block font-medium">Select CSV File:</label>
-                        <input type="file" name="csv_file" id="csv_file" accept=".csv" required class="mt-2 block border border-gray-300 rounded p-2">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <h4 class="font-bold text-lg text-blue-800 dark:text-blue-300">Total Students</h4>
+                        <p class="text-3xl font-bold mt-2">{{ $totalStudents ?? 0 }}</p>
                     </div>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                        Upload Accounts
-                    </button>
-                </form>
-
+                    <div class="p-4 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                        <h4 class="font-bold text-lg text-teal-800 dark:text-teal-300">Total Faculty</h4>
+                        <p class="text-3xl font-bold mt-2">{{ $totalFaculty ?? 0 }}</p>
+                    </div>
+                    <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <h4 class="font-bold text-lg text-purple-800 dark:text-purple-300">Total Sections</h4>
+                        <p class="text-3xl font-bold mt-2">{{ $totalSections ?? 0 }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

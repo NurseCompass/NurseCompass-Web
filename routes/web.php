@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
 use App\Models\QuizResult;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\CheckRole;
+use App\Models\Section;
+use App\Models\User;
 
 Route::get('/', function () {
     return view('welcome');
@@ -96,13 +98,23 @@ Route::middleware(['auth', CheckRole::class . ':department_head'])->group(functi
 // --- ADMIN / SYSTEM ADMINISTRATOR ROUTES ---
 Route::middleware(['auth', App\Http\Middleware\CheckRole::class . ':admin'])->group(function () {
 
-    // The Admin Dashboard View
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard'); // <-- THIS IS THE MISSING PIECE!
+    // 1. Admin Dashboard Overview
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    // The CSV Import Route
-    Route::post('/admin/import-students', [App\Http\Controllers\AdminController::class, 'importStudents'])->name('admin.import.students');
+    // 2. Manage Students
+    Route::get('/admin/students', [AdminController::class, 'studentsIndex'])->name('admin.students');
+    Route::post('/admin/import-students', [AdminController::class, 'importStudents'])->name('admin.import.students');
+    Route::post('/admin/student', [AdminController::class, 'storeSingleStudent'])->name('admin.store.student');
+
+    // 3. Manage Sections
+    Route::get('/admin/sections', [AdminController::class, 'sectionsIndex'])->name('admin.sections');
+
+    // 4. Manage Faculty & Section Assignments
+    Route::get('/admin/faculty', [AdminController::class, 'facultyIndex'])->name('admin.faculty');
+    Route::post('/admin/faculty/{faculty}/sections', [AdminController::class, 'assignSectionsToFaculty'])->name('admin.faculty.sections');
+
+    // 5. Manage Dean
+    Route::get('/admin/dean', [AdminController::class, 'deanIndex'])->name('admin.dean');
 });
 
 require __DIR__ . '/auth.php';
