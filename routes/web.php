@@ -111,7 +111,7 @@ Route::middleware(['auth', App\Http\Middleware\CheckRole::class . ':admin'])->gr
 
     // 4. Manage Faculty & Section Assignments
     Route::get('/admin/faculty', [AdminController::class, 'facultyIndex'])->name('admin.faculty');
-    Route::post('/admin/faculty/{faculty}/sections', [AdminController::class, 'assignSectionsToFaculty'])->name('admin.faculty.sections');
+    Route::post('/admin/faculty/assign', [AdminController::class, 'assignSections'])->name('admin.faculty.assign');
 
     // 5. Manage Dean
     Route::get('/admin/dean', [AdminController::class, 'deanIndex'])->name('admin.dean');

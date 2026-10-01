@@ -118,15 +118,22 @@ class AdminController extends Controller
         return back()->with('success', "Student {$user->name} registered successfully!");
     }
 
-    public function assignSectionsToFaculty(Request $request, User $faculty)
+    public function assignSections(Request $request)
     {
-        $request->validate([
-            'sections' => 'nullable|array',
-            'sections.*' => 'exists:sections,id',
-        ]);
+        // Retrieve the multi-dimensional array of assignments from the form
+        $assignments = $request->input('assignments', []);
 
-        $faculty->handledSections()->sync($request->sections ?? []);
+        // Get all faculty members to process updates (including cleared checkboxes)
+        $facultyMembers = User::where('role', 'faculty')->get();
 
-        return back()->with('success', "Sections updated successfully for {$faculty->name}!");
+        foreach ($facultyMembers as $faculty) {
+            // If the faculty ID exists in the request, grab their selected sections. Otherwise, empty array.
+            $selectedSections = isset($assignments[$faculty->id]) ? $assignments[$faculty->id] : [];
+
+            // sync() automatically adds new sections and removes unchecked ones from the pivot table
+            $faculty->handledSections()->sync($selectedSections);
+        }
+
+        return back()->with('success', 'Saved successfully.');
     }
 }

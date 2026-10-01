@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reviewer;
-use Illuminate\Support\Facades\Auth; // Added this to make Intelephense happy!
-use Illuminate\Support\Facades\Http; // <-- Added for the ML Bridge
-use Illuminate\Support\Facades\Log;  // <-- Added to log ML errors safely
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ReviewerController extends Controller
 {
@@ -43,9 +43,10 @@ class ReviewerController extends Controller
 
     public function store(Request $request)
     {
+        // Added document_type validation
         $request->validate([
             'title' => 'required|string|max:255',
-            // category validation removed
+            'document_type' => 'required|string|in:PPT,Syllabus,Module,Reading Material',
             'file' => 'required|file|mimes:pdf,doc,docx,ppt,pptx,txt,zip|max:307200',
             'target_sections' => 'nullable|array',
         ]);
@@ -56,15 +57,15 @@ class ReviewerController extends Controller
         $user = Auth::user();
         $isFaculty = $user->role === 'faculty';
 
+        // Added document_type to the creation array
         $reviewer = Reviewer::create([
             'user_id' => $user->id,
             'title' => $request->title,
+            'document_type' => $request->document_type,
             'file_path' => $filePath,
             'is_faculty_upload' => $isFaculty,
             'target_sections' => $isFaculty ? $request->target_sections : null,
         ]);
-
-        // ... Keep your existing try/catch block for the ML API here ...
 
         try {
             $absolutePath = storage_path('app/public/' . $filePath);
@@ -105,15 +106,17 @@ class ReviewerController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        // Added document_type validation
         $request->validate([
             'title' => 'required|string|max:255',
-            // category validation removed
+            'document_type' => 'required|string|in:PPT,Syllabus,Module,Reading Material',
             'target_sections' => 'nullable|array',
         ]);
 
+        // Added document_type to the update array
         $reviewer->update([
             'title' => $request->title,
-            // category update removed completely
+            'document_type' => $request->document_type,
             'target_sections' => $user->role === 'faculty' ? $request->target_sections : null,
         ]);
 

@@ -65,7 +65,7 @@
                             </a>
                             @elseif($userYear > 3 || ($userYear == 3 && $hasFinishedAssessment))
                             <div class="w-full text-center bg-slate-200 text-slate-500 font-bold py-3 rounded-xl cursor-not-allowed">
-                                Completed Successfully
+                                Completed
                             </div>
                             @else
                             <button disabled class="w-full text-center bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed opacity-60">
@@ -98,7 +98,7 @@
                             </a>
                             @elseif($userYear > 4 || ($userYear == 4 && $hasFinishedAssessment))
                             <div class="w-full text-center bg-slate-200 text-slate-500 font-bold py-3 rounded-xl cursor-not-allowed">
-                                Completed Successfully
+                                Completed
                             </div>
                             @else
                             <button disabled class="w-full text-center bg-slate-100 text-slate-400 font-bold py-3 rounded-xl cursor-not-allowed opacity-60">

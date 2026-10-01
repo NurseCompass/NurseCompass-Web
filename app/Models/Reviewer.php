@@ -12,6 +12,7 @@ class Reviewer extends Model
     protected $fillable = [
         'user_id',
         'title',
+        'document_type',
         'file_path',
         'is_faculty_upload',
         'target_sections', // ADDED THIS

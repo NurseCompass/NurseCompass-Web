@@ -1,51 +1,74 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Manage Faculty & Section Assignments') }}
+        <h2 class="font-semibold text-xl text-slate-800 leading-tight">
+            {{ __('Manage Faculty') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-10 bg-slate-100 min-h-screen font-sans">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Single Form Wrapping All Faculty -->
+            <form action="{{ route('admin.faculty.assign') }}" method="POST" class="space-y-6">
+                @csrf
+                
+                <!-- Sticky Header with Global Save Button -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sticky top-6 z-10">
+                    <div>
+                        <h1 class="text-2xl font-black text-slate-900">Assign Sections</h1>
+                        <p class="text-slate-500 text-sm mt-0.5">Select sections for your faculty members and save.</p>
+                    </div>
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-10 rounded-xl transition shadow-lg shadow-teal-600/20 text-sm w-full sm:w-auto shrink-0 tracking-wide">
+                        Save
+                    </button>
+                </div>
 
-            @if(session('success'))
-            <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/20 dark:text-green-400">
-                {{ session('success') }}
-            </div>
-            @endif
+                <!-- Success Message -->
+                @if(session('success'))
+                    <div class="p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-200 font-bold text-sm shadow-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100">
-                <h3 class="text-2xl font-bold mb-2">Assign Sections to Faculty</h3>
-                <p class="mb-6 text-gray-500 dark:text-gray-400">Select multiple sections that each professor handles.</p>
-
+                <!-- Faculty Cards Grid -->
                 <div class="space-y-6">
                     @forelse($facultyMembers as $faculty)
-                    <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900/40">
-                        <h4 class="font-bold text-lg text-teal-600 dark:text-teal-400 mb-3">{{ $faculty->name }} <span class="text-xs font-normal text-gray-500">({{ $faculty->email }})</span></h4>
-
-                        <form action="{{ route('admin.faculty.sections', $faculty->id) }}" method="POST">
-                            @csrf
-                            <div class="flex flex-wrap gap-4 mb-4">
-                                @foreach($sections as $section)
-                                <label class="inline-flex items-center bg-white dark:bg-gray-800 px-3 py-1.5 rounded border border-gray-200 dark:border-gray-700">
-                                    <input type="checkbox" name="sections[]" value="{{ $section->id }}"
-                                        {{ $faculty->handledSections->contains($section->id) ? 'checked' : '' }}
-                                        class="text-teal-600 rounded border-gray-300 focus:ring-teal-500">
-                                    <span class="ml-2 text-sm font-medium">{{ $section->name }} (Year {{ $section->year_level }})</span>
-                                </label>
-                                @endforeach
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                            <!-- Faculty Info -->
+                            <div class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-extrabold text-slate-900">{{ $faculty->name }}</h3>
+                                    <p class="text-xs font-semibold text-slate-500 mt-0.5">{{ $faculty->email }}</p>
+                                </div>
                             </div>
-                            <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 px-5 rounded transition shadow-sm">
-                                Save Assignments for {{ $faculty->name }}
-                            </button>
-                        </form>
-                    </div>
+                            
+                            <!-- Section Checkboxes -->
+                            <div class="p-6">
+                                <div class="flex flex-wrap gap-4">
+                                    @foreach($sections as $section)
+                                        <label class="inline-flex items-center p-3 rounded-xl border border-slate-200 bg-white hover:border-teal-500 hover:bg-teal-50/30 transition cursor-pointer shadow-sm">
+                                            <!-- Submits an array of sections grouped by the faculty ID -->
+                                            <input type="checkbox" 
+                                                   name="assignments[{{ $faculty->id }}][]" 
+                                                   value="{{ $section->id }}" 
+                                                   class="w-4 h-4 text-teal-600 border-slate-300 focus:ring-teal-500 rounded transition"
+                                                   @if($faculty->handledSections->contains($section->id)) checked @endif>
+                                            <span class="ml-3 text-sm font-semibold text-slate-700">
+                                                {{ $section->name }} <span class="text-slate-400 font-medium">(Year {{ $section->year_level }})</span>
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
                     @empty
-                    <p class="text-gray-500">No faculty members found in the system.</p>
+                        <div class="p-6 text-center text-slate-500 font-medium bg-white rounded-2xl border border-slate-200">
+                            No faculty members found in the system.
+                        </div>
                     @endforelse
                 </div>
-            </div>
-
+                
+            </form>
         </div>
     </div>
 </x-app-layout>
