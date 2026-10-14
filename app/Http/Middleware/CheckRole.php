@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth; // <-- Added the official Auth Facade
 
 class CheckRole
 {
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, string $role): Response
     {
         // 1. Ensure user is actually logged in using the Auth facade
         if (!Auth::check()) {

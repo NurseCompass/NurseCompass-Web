@@ -8,26 +8,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-white m-0 p-0 min-h-screen w-full flex flex-col justify-between font-sans">
+<body class="bg-[#F8F9FA] m-0 p-0 min-h-screen w-full flex flex-col font-sans">
 
-    <!-- Top Navigation Bar -->
-    <header class="w-full py-5 px-8 border-b border-slate-100 flex items-center justify-between bg-white shadow-sm">
+    <!-- Top Navigation Bar (Matched to Figma Header) -->
+    <!-- Top Navigation Bar (Matched to Figma Header) -->
+    <header class="w-full py-4 px-8 bg-white border-b-2 border-red-800 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-teal-600/20">
-                NC
-            </div>
-            <span class="text-xl font-black text-slate-900 tracking-tight">Nurse<span class="text-teal-600">Compass</span></span>
+            <!-- Adjusted Logo (No forced circle formatting) -->
+            <img src="{{ asset('images/UDM-CHS logo.png') }}" alt="UDM Logo" class="h-10 w-auto object-contain" />
+            <span class="text-2xl font-bold text-red-800 tracking-tight">NurseCompass</span>
         </div>
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 hidden sm:block">Predictive Workforce Readiness System</span>
+        <div class="hidden sm:block">
+            <span class="text-sm font-bold uppercase tracking-wider text-red-800">Predictive Workforce Readiness System</span>
+        </div>
     </header>
 
-    <!-- Main Section centered with ample spacing -->
-    <main class="w-full flex-grow flex items-center justify-center px-4 py-12 bg-slate-50/50">
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8 sm:p-10">
+    <!-- Main Section (Centered Card) -->
+    <main class="w-full flex-grow flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-[450px] bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 sm:p-10">
 
-            <div class="mb-8">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tight">Sign In</h2>
-                <p class="text-slate-500 text-sm mt-1">Access your nursing assessment and review portal.</p>
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-red-800">Sign In</h2>
+                <p class="text-gray-500 text-sm mt-2">Access your nursing assessment and review portal.</p>
             </div>
 
             <!-- Session Status -->
@@ -37,55 +39,78 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+            <form method="POST" action="{{ route('login') }}">
                 @csrf
 
-                <!-- Email Address -->
-                <div>
-                    <label for="email" class="block font-bold text-xs uppercase tracking-wider text-slate-700 mb-2">Email Address</label>
-                    <input id="email" class="block w-full border border-slate-300 rounded-xl px-4 py-3.5 text-slate-900 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition shadow-sm outline-none text-sm font-medium" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="student@example.com" />
+                <!-- Student Number or Email Address -->
+                <div class="mb-5">
+                    <label for="email" class="block font-bold text-xs tracking-wider text-red-800 mb-2">
+                        Student Number or Email Address
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <!-- Solid User Icon -->
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input id="email" class="block w-full border-none rounded-lg pl-10 pr-4 py-3.5 text-gray-900 bg-gray-100 focus:bg-white focus:ring-2 focus:ring-red-800 transition outline-none text-sm font-medium" type="text" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" />
+                    </div>
                     @error('email')
-                    <p class="text-rose-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Password -->
-                <div>
-                    <label for="password" class="block font-bold text-xs uppercase tracking-wider text-slate-700 mb-2">Password</label>
-                    <input id="password" class="block w-full border border-slate-300 rounded-xl px-4 py-3.5 text-slate-900 bg-slate-50 focus:bg-white focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition shadow-sm outline-none text-sm font-medium" type="password" name="password" required autocomplete="current-password" placeholder="••••••••" />
+                <div class="mb-5">
+                    <label for="password" class="block font-bold text-xs tracking-wider text-red-800 mb-2">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <!-- Solid Lock Icon -->
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <input id="password" class="block w-full border-none rounded-lg pl-10 pr-10 py-3.5 text-gray-900 bg-gray-100 focus:bg-white focus:ring-2 focus:ring-red-800 transition outline-none text-sm font-medium" type="password" name="password" required autocomplete="current-password" />
+
+                        <!-- Eye Slash Icon -->
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+                            <svg class="h-5 w-5 text-gray-400 hover:text-gray-600 transition" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd" />
+                                <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                            </svg>
+                        </div>
+                    </div>
                     @error('password')
-                    <p class="text-rose-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1.5 font-semibold">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Remember Me & Forgot Password -->
-                <div class="flex items-center justify-between text-sm pt-1">
+                <div class="flex items-center justify-between text-sm mt-5 mb-6">
                     <label for="remember_me" class="inline-flex items-center cursor-pointer">
-                        <input id="remember_me" type="checkbox" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500 shadow-sm w-4 h-4" name="remember">
-                        <span class="ms-2 font-semibold text-slate-700 text-xs">Remember me</span>
+                        <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-red-800 focus:ring-red-800 shadow-sm w-4 h-4" name="remember">
+                        <span class="ms-2 font-medium text-gray-700 text-sm">Remember Me</span>
                     </label>
 
                     @if (Route::has('password.request'))
-                    <a class="font-semibold text-xs text-teal-600 hover:text-teal-700 transition" href="{{ route('password.request') }}">
-                        Forgot password?
+                    <a class="font-medium text-sm text-red-800 hover:underline transition" href="{{ route('password.request') }}">
+                        Forgot Password?
                     </a>
                     @endif
                 </div>
 
                 <!-- Submit Button -->
-                <div class="pt-3">
-                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3.5 px-6 rounded-xl transition shadow-lg shadow-teal-600/20 text-sm tracking-wide">
+                <div>
+                    <button type="submit" class="w-full bg-red-800 hover:bg-red-900 text-white font-bold py-3.5 px-6 rounded-lg transition text-sm tracking-wide shadow-md">
                         Sign In to Portal
                     </button>
                 </div>
             </form>
         </div>
     </main>
-
-    <!-- Footer -->
-    <footer class="w-full py-6 px-8 border-t border-slate-100 text-center text-xs text-slate-400 font-medium bg-white">
-        Universidad de Manila — College of Nursing &copy; {{ date('Y') }}
-    </footer>
 
 </body>
 
