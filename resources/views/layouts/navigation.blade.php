@@ -48,6 +48,12 @@
                     <a href="{{ route('department.dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('department.dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                         {{ __('Dept Head Dashboard') }}
                     </a>
+                    <a href="{{ route('department.assessment.upload') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('department.assessment.upload') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        {{ __('Upload Assessment') }}
+                    </a>
+                    <a href="{{ route('department.assessment.history') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('department.assessment.history') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        {{ __('Assessment History') }}
+                    </a>
                     @else
                     <a href="{{ route('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                         {{ __('Assessment Portal') }}
@@ -151,6 +157,12 @@
         @elseif(Auth::user()->role === 'department_head')
         <a href="{{ route('department.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('department.dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">
             {{ __('Dept Head Dashboard') }}
+        </a>
+        <a href="{{ route('department.assessment.upload') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('department.assessment.upload') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">
+            {{ __('Upload Assessment') }}
+        </a>
+        <a href="{{ route('department.assessment.history') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('department.assessment.history') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">
+            {{ __('Assessment History') }}
         </a>
         @else
         <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">

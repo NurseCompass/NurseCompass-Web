@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
-    protected $fillable = ['year_level', 'section', 'question_text'];
+    // Added 'is_active' to the array below
+    protected $fillable = ['year_level', 'section', 'question_text', 'is_active'];
 
     // This allows you to call $question->options
     public function options(): HasMany

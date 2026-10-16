@@ -30,8 +30,9 @@ class QuizController extends Controller
             return redirect('/dashboard')->with('error', 'You have already completed your assessment for this year.');
         }
 
-        // 2. Fetch ALL questions for their year level
+        // 2. Fetch ALL active questions for their year level
         $questions = Question::where('year_level', $user->year_level)
+            ->where('is_active', true) // <--- ADD THIS LINE
             ->with('options')
             ->get();
 
@@ -68,9 +69,10 @@ class QuizController extends Controller
             return redirect('/dashboard')->with('error', 'You have already completed the ' . $dbSection . ' assessment.');
         }
 
-        // 3. Fetch the correct questions (Only runs if they haven't taken it)
+        // 3. Fetch the correct active questions (Only runs if they haven't taken it)
         $questions = Question::where('year_level', $user->year_level)
             ->where('section', $dbSection)
+            ->where('is_active', true) // <--- ADD THIS LINE
             ->with('options')
             ->get();
 

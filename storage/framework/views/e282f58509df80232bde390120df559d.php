@@ -56,6 +56,14 @@
                         <?php echo e(__('Dept Head Dashboard')); ?>
 
                     </a>
+                    <a href="<?php echo e(route('department.assessment.upload')); ?>" class="px-3 py-2 rounded-lg text-sm font-semibold transition <?php echo e(request()->routeIs('department.assessment.upload') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'); ?>">
+                        <?php echo e(__('Upload Assessment')); ?>
+
+                    </a>
+                    <a href="<?php echo e(route('department.assessment.history')); ?>" class="px-3 py-2 rounded-lg text-sm font-semibold transition <?php echo e(request()->routeIs('department.assessment.history') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'); ?>">
+                        <?php echo e(__('Assessment History')); ?>
+
+                    </a>
                     <?php else: ?>
                     <a href="<?php echo e(route('dashboard')); ?>" class="px-3 py-2 rounded-lg text-sm font-semibold transition <?php echo e(request()->routeIs('dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'); ?>">
                         <?php echo e(__('Assessment Portal')); ?>
@@ -171,6 +179,14 @@
         <?php elseif(Auth::user()->role === 'department_head'): ?>
         <a href="<?php echo e(route('department.dashboard')); ?>" class="block px-3 py-2 rounded-lg text-base font-semibold <?php echo e(request()->routeIs('department.dashboard') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50'); ?>">
             <?php echo e(__('Dept Head Dashboard')); ?>
+
+        </a>
+        <a href="<?php echo e(route('department.assessment.upload')); ?>" class="block px-3 py-2 rounded-lg text-base font-semibold <?php echo e(request()->routeIs('department.assessment.upload') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50'); ?>">
+            <?php echo e(__('Upload Assessment')); ?>
+
+        </a>
+        <a href="<?php echo e(route('department.assessment.history')); ?>" class="block px-3 py-2 rounded-lg text-base font-semibold <?php echo e(request()->routeIs('department.assessment.history') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50'); ?>">
+            <?php echo e(__('Assessment History')); ?>
 
         </a>
         <?php else: ?>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\CheckRole;
 use App\Models\Section;
 use App\Models\User;
+use App\Http\Controllers\DeanAssessmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -93,6 +94,18 @@ Route::middleware(['auth', CheckRole::class . ':faculty'])->group(function () {
 // --- DEPARTMENT HEAD ROUTES ---
 Route::middleware(['auth', CheckRole::class . ':department_head'])->group(function () {
     Route::get('/department/dashboard', [App\Http\Controllers\DepartmentController::class, 'index'])->name('department.dashboard');
+
+    // Assessment Upload & AI Parsing Routes
+    Route::get('/department/upload-assessment', [DeanAssessmentController::class, 'showUploadForm'])->name('department.assessment.upload');
+    Route::post('/department/parse-assessment', [DeanAssessmentController::class, 'parsePdf'])->name('department.assessment.parse');
+
+    // NEW: Review and Confirm Routes
+    Route::get('/department/review-assessment', [DeanAssessmentController::class, 'showReviewPage'])->name('department.assessment.review');
+    Route::post('/department/confirm-assessment', [DeanAssessmentController::class, 'confirmAssessment'])->name('department.assessment.confirm');
+
+    // History and Restore Routes
+    Route::get('/department/assessment-history', [DeanAssessmentController::class, 'showHistory'])->name('department.assessment.history');
+    Route::post('/department/assessment-restore', [DeanAssessmentController::class, 'restoreVersion'])->name('department.assessment.restore');
 });
 
 // --- ADMIN / SYSTEM ADMINISTRATOR ROUTES ---
