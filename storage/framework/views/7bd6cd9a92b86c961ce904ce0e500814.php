@@ -21,6 +21,22 @@
     <div class="py-10 bg-white min-h-screen font-sans pb-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
+            <!-- NEW: Assessment Portal Management Action Card -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Assessment Portal Management</h3>
+                    <p class="text-sm text-gray-500">Upload new assessment question sets via PDF or manage active question versions.</p>
+                </div>
+                <div class="flex gap-3">
+                    <a href="<?php echo e(route('department.assessment.history')); ?>" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition text-sm text-center">
+                        Question History
+                    </a>
+                    <a href="<?php echo e(route('department.assessment.upload')); ?>" class="px-4 py-2 bg-red-800 hover:bg-red-900 text-white font-bold rounded-xl transition text-sm text-center shadow-md">
+                        + Upload PDF Set
+                    </a>
+                </div>
+            </div>
+
             <!-- Metrics Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-sm">

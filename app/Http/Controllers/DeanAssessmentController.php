@@ -26,7 +26,8 @@ class DeanAssessmentController extends Controller
         $file = $request->file('pdf_file');
 
         try {
-            $response = Http::timeout(120)
+            // Increased timeout to 300 seconds (5 minutes) to give the AI time to read
+            $response = Http::timeout(300)
                 ->attach('document', file_get_contents($file), $file->getClientOriginalName())
                 ->post('http://127.0.0.1:5001/api/extract-questions', [
                     'year_level' => $request->year_level
@@ -63,30 +64,48 @@ class DeanAssessmentController extends Controller
     // 4. Confirm and Save to Database
     public function confirmAssessment(Request $request)
     {
-        $questions = session('pending_assessment');
         $yearLevel = session('pending_year_level');
+        $submittedQuestions = $request->input('questions');
 
-        if (!$questions) {
-            return redirect()->route('department.assessment.upload');
+        if (!$submittedQuestions || !$yearLevel) {
+            return redirect()->route('department.assessment.upload')->with('error', 'Session expired or no questions submitted.');
         }
 
+        // STEP 1: Deactivate the old questions
         Question::where('year_level', $yearLevel)->update(['is_active' => false]);
 
-        foreach ($questions as $q) {
+        // Capture the EXACT exact microsecond to group the batch
+        $now = now();
+        $newQuestionIds = [];
+
+        // STEP 2: Loop and save
+        foreach ($submittedQuestions as $q) {
+
+            $cleanQuestionText = preg_replace('/^[0-9]+\.\s*/', '', $q['question_text']);
+
             $newQuestion = Question::create([
                 'year_level' => $yearLevel,
                 'section' => $q['section'],
-                'question_text' => $q['question_text'],
+                'question_text' => $cleanQuestionText,
                 'is_active' => true,
             ]);
 
-            foreach ($q['options'] as $opt) {
+            // Save the ID so we can sync its timestamp in Step 3
+            $newQuestionIds[] = $newQuestion->id;
+
+            foreach ($q['options'] as $optIndex => $optText) {
                 $newQuestion->options()->create([
-                    'option_text' => $opt['option_text'],
-                    'is_correct' => $opt['is_correct']
+                    'option_text' => $optText,
+                    'is_correct' => ($q['correct_option'] == $optIndex)
                 ]);
             }
         }
+
+        // STEP 3: Force all new questions to have the EXACT same timestamp so they group perfectly in History
+        Question::whereIn('id', $newQuestionIds)->update([
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
 
         session()->forget(['pending_assessment', 'pending_year_level']);
 

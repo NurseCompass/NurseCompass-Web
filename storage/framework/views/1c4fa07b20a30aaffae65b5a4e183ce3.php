@@ -12,18 +12,14 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-200">
                 <div class="p-8">
-
-                    <!-- Header -->
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-black text-red-800">Assessment Version History</h2>
                         <a href="<?php echo e(route('department.assessment.upload')); ?>" class="bg-red-800 text-white text-sm font-bold px-4 py-2 rounded-xl hover:bg-red-900 transition shadow-sm">
                             + Upload New Set
                         </a>
                     </div>
+                    <p class="text-gray-600 mb-8 text-sm">View all previously uploaded question sets and restore archived versions.</p>
 
-                    <p class="text-gray-600 mb-8 text-sm">View all previously uploaded question sets. If a mistake was made in the current active assessment, you can instantly restore an archived version here.</p>
-
-                    <!-- History Table -->
                     <div class="overflow-x-auto border border-gray-200 rounded-xl">
                         <table class="w-full text-left border-collapse bg-white">
                             <thead>
@@ -54,7 +50,7 @@
                                             <?php echo csrf_field(); ?>
                                             <input type="hidden" name="year_level" value="<?php echo e($batch->year_level); ?>">
                                             <input type="hidden" name="created_at" value="<?php echo e($batch->created_at); ?>">
-                                            <button type="submit" class="text-xs bg-red-50 hover:bg-red-100 border border-red-200 text-red-800 font-bold px-3 py-1.5 rounded-lg transition" onclick="return confirm('Are you sure you want to restore this version? The current active questions for this year will be archived.')">
+                                            <button type="submit" class="text-xs bg-red-50 hover:bg-red-100 border border-red-200 text-red-800 font-bold px-3 py-1.5 rounded-lg transition" onclick="return confirm('Are you sure you want to restore this version?')">
                                                 Restore Set
                                             </button>
                                         </form>
@@ -71,7 +67,6 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>

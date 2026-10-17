@@ -1,18 +1,19 @@
 <x-app-layout>
     <div class="py-12 bg-gray-50 min-h-screen">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-200">
+            <form action="{{ route('department.assessment.confirm') }}" method="POST" class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-200">
+                @csrf
                 <div class="p-8 bg-white border-b border-gray-200">
 
                     <!-- Header -->
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-black text-red-800">Review Extracted Questions</h2>
+                        <h2 class="text-2xl font-black text-red-800">Review & Edit Questions</h2>
                         <span class="px-4 py-1.5 bg-red-100 text-red-800 font-bold rounded-full text-sm">
                             {{ $yearLevel }}
                         </span>
                     </div>
 
-                    <p class="text-gray-600 mb-8">Please review the questions extracted by the AI below. If everything looks correct, click "Confirm & Activate" at the bottom to make these live for the students. The old questions will be safely archived.</p>
+                    <p class="text-gray-600 mb-8">Review the AI's extraction below. <strong>You can click on any question or option to edit it manually.</strong> Select the radio button next to the correct answer. When finished, click Confirm.</p>
 
                     <!-- Questions Loop -->
                     <div class="space-y-8">
@@ -20,26 +21,28 @@
                         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
                             <div class="flex items-center gap-3 mb-3">
                                 <span class="bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded">Q{{ $index + 1 }}</span>
-                                <span class="text-sm font-bold text-gray-500 uppercase tracking-wider">{{ $q['section'] }}</span>
+
+                                <!-- Editable Section -->
+                                <select name="questions[{{ $index }}][section]" class="text-sm font-bold text-gray-700 uppercase tracking-wider border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500 h-8 py-0">
+                                    <option value="Academic Performance" {{ $q['section'] == 'Academic Performance' ? 'selected' : '' }}>Academic Performance</option>
+                                    <option value="Self-Efficacy" {{ $q['section'] == 'Self-Efficacy' ? 'selected' : '' }}>Self-Efficacy</option>
+                                    <option value="Initiative" {{ $q['section'] == 'Initiative' ? 'selected' : '' }}>Initiative</option>
+                                    <option value="Motivation" {{ $q['section'] == 'Motivation' ? 'selected' : '' }}>Motivation</option>
+                                </select>
                             </div>
-                            <p class="text-lg font-bold text-gray-900 mb-4">{{ $q['question_text'] }}</p>
 
+                            <!-- Editable Question Text -->
+                            <textarea name="questions[{{ $index }}][question_text]" rows="2" class="w-full text-lg font-bold text-gray-900 mb-4 border-gray-300 rounded-xl shadow-sm focus:border-red-500 focus:ring-red-500" required>{{ $q['question_text'] }}</textarea>
+
+                            <!-- Editable Options -->
                             <div class="space-y-2 pl-4">
-                                @foreach ($q['options'] as $opt)
-                                <div class="flex items-center gap-3 p-2 rounded-lg {{ $opt['is_correct'] ? 'bg-green-100 border border-green-300' : 'bg-white border border-gray-200' }}">
-                                    @if($opt['is_correct'])
-                                    <!-- Green Checkmark for correct answer -->
-                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    @else
-                                    <!-- Empty circle for incorrect options -->
-                                    <div class="w-5 h-5 rounded-full border-2 border-gray-300"></div>
-                                    @endif
+                                @foreach ($q['options'] as $optIndex => $opt)
+                                <div class="flex items-center gap-3">
+                                    <!-- Radio Button for Correct Answer -->
+                                    <input type="radio" name="questions[{{ $index }}][correct_option]" value="{{ $optIndex }}" {{ $opt['is_correct'] ? 'checked' : '' }} class="w-5 h-5 text-green-600 focus:ring-green-500 border-gray-300 cursor-pointer" required>
 
-                                    <span class="{{ $opt['is_correct'] ? 'text-green-800 font-bold' : 'text-gray-700' }}">
-                                        {{ $opt['option_text'] }}
-                                    </span>
+                                    <!-- Option Text Input -->
+                                    <input type="text" name="questions[{{ $index }}][options][{{ $optIndex }}]" value="{{ $opt['option_text'] }}" class="flex-1 border-gray-300 rounded-lg shadow-sm focus:border-red-500 focus:ring-red-500 {{ $opt['is_correct'] ? 'bg-green-50 font-bold' : '' }}" required>
                                 </div>
                                 @endforeach
                             </div>
@@ -53,16 +56,13 @@
                             ← Cancel & Upload Different PDF
                         </a>
 
-                        <form action="{{ route('department.assessment.confirm') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="bg-red-800 hover:bg-red-900 text-white px-8 py-3 rounded-xl font-bold transition shadow-md">
-                                Confirm & Activate Questions
-                            </button>
-                        </form>
+                        <button type="submit" class="bg-red-800 hover:bg-red-900 text-white px-8 py-3 rounded-xl font-bold transition shadow-md">
+                            Confirm & Activate Questions
+                        </button>
                     </div>
 
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </x-app-layout>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title><?php echo e(config('app.name', 'Laravel')); ?></title>
+    <title><?php echo e(config('app.name', 'NurseCompass')); ?></title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -38,6 +38,8 @@
     </div>
 
     <?php if(auth()->guard()->check()): ?>
+    <!-- This hides the chatbot if the URL contains "quiz" -->
+    <?php if (! (request()->is('quiz*'))): ?>
     <?php if (isset($component)) { $__componentOriginale2c4cac9a1edf521bb76e0ab5c886ac1 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginale2c4cac9a1edf521bb76e0ab5c886ac1 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.chat-bubble','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -58,6 +60,7 @@
 <?php $component = $__componentOriginale2c4cac9a1edf521bb76e0ab5c886ac1; ?>
 <?php unset($__componentOriginale2c4cac9a1edf521bb76e0ab5c886ac1); ?>
 <?php endif; ?>
+    <?php endif; ?>
     <?php endif; ?>
 
 </body>
