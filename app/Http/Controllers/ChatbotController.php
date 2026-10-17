@@ -19,7 +19,7 @@ class ChatbotController extends Controller
         ]);
 
         try {
-            $response = Http::timeout(120)->post('http://127.0.0.1:5001/api/chat', [
+            $response = Http::timeout(120)->post(env('PYTHON_SERVER_URL') . '/api/chat', [
                 'user_message' => $request->message
             ]);
 

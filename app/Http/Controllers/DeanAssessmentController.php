@@ -29,7 +29,7 @@ class DeanAssessmentController extends Controller
             // Increased timeout to 300 seconds (5 minutes) to give the AI time to read
             $response = Http::timeout(300)
                 ->attach('document', file_get_contents($file), $file->getClientOriginalName())
-                ->post('http://127.0.0.1:5001/api/extract-questions', [
+                ->post(env('PYTHON_SERVER_URL') . '/api/extract-questions', [
                     'year_level' => $request->year_level
                 ]);
 

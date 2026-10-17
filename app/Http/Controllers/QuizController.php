@@ -138,7 +138,7 @@ class QuizController extends Controller
         $lowestPct = 0;
 
         try {
-            $mlResponse = Http::timeout(60)->post('http://127.0.0.1:5001/api/predict-readiness', [
+            $mlResponse = Http::timeout(60)->post(env('PYTHON_SERVER_URL') . '/api/predict-readiness', [
                 'score' => $score,
                 'total_questions' => $totalQuestions,
                 'category_scores' => $categoryStats,

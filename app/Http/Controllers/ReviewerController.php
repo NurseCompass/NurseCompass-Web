@@ -74,7 +74,7 @@ class ReviewerController extends Controller
                 'document',
                 fopen($absolutePath, 'r'),
                 $request->file('file')->getClientOriginalName()
-            )->post('http://127.0.0.1:5001/api/train-chatbot', [
+            )->post(env('PYTHON_SERVER_URL') . '/api/train-chatbot', [
                 'reviewer_id' => $reviewer->id,
                 'title' => $reviewer->title,
             ]);
