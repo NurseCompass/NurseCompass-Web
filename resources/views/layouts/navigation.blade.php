@@ -61,6 +61,9 @@
                     <a href="{{ route('reviewers.index') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('reviewers.*') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                         {{ __('Study Materials') }}
                     </a>
+                    <a href="{{ route('student.assessment-history') }}" class="px-3 py-2 rounded-lg text-sm font-semibold transition {{ request()->routeIs('student.assessment-history') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                        {{ __('Assessment History') }}
+                    </a>
                     @endif
                 </div>
             </div>
@@ -170,6 +173,9 @@
         </a>
         <a href="{{ route('reviewers.index') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('reviewers.*') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">
             {{ __('Study Materials') }}
+        </a>
+        <a href="{{ route('student.assessment-history') }}" class="block px-3 py-2 rounded-lg text-base font-semibold {{ request()->routeIs('student.assessment-history') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50' }}">
+            {{ __('Assessment History') }}
         </a>
         @endif
 

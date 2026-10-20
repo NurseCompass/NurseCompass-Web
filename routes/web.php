@@ -10,6 +10,7 @@ use App\Http\Middleware\CheckRole;
 use App\Models\Section;
 use App\Models\User;
 use App\Http\Controllers\DeanAssessmentController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +55,10 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
         return view('dashboard', compact('user', 'results', 'completedSections'));
     })->middleware(['verified'])->name('dashboard');
 
+    // --- STUDENT ASSESSMENT HISTORY ---
+    Route::get('/student/assessment-history', [StudentController::class, 'assessmentHistory'])
+        ->name('student.assessment-history');
+
     // --- STUDENT ONBOARDING ---
     Route::get('/onboarding', function () {
         return view('onboarding');
@@ -75,6 +80,7 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
     Route::post('/submit-quiz', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
     Route::get('/quiz/{slug}', [App\Http\Controllers\QuizController::class, 'showQuiz']);
     Route::post('/quiz/submit', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
+    Route::get('/quiz/result/{id}', [App\Http\Controllers\QuizController::class, 'showResult'])->name('quiz.result');
 });
 
 // --- STUDENT ROUTES ---

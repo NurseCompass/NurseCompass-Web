@@ -1,5 +1,16 @@
 <x-app-layout>
     @php
+    /** @var string $topCategory */
+    /** @var int|float $topPct */
+    /** @var string $secondCategory */
+    /** @var int|float $secondPct */
+    /** @var string $lowestCategory */
+    /** @var int|float $lowestPct */
+    /** @var array $categoryPercentages */
+    /** @var int|string $score */
+    /** @var int|string $totalQuestions */
+    /** @var string $personalizedNote */
+
     $topCategory = $topCategory ?? 'Academic Performance';
     $topPct = $topPct ?? 0;
     $secondCategory = $secondCategory ?? 'Self-Efficacy';
@@ -31,9 +42,7 @@
                 <!-- 2-Column Layout Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-grow">
 
-                    <!-- ========================================== -->
-                    <!-- LEFT COLUMN                                -->
-                    <!-- ========================================== -->
+                    <!-- LEFT COLUMN -->
                     <div class="flex flex-col gap-6">
 
                         <!-- Score Block -->
@@ -62,31 +71,29 @@
                         </div>
                     </div>
 
-                    <!-- ========================================== -->
-                    <!-- RIGHT COLUMN                               -->
-                    <!-- ========================================== -->
+                    <!-- RIGHT COLUMN -->
                     <div class="flex flex-col gap-6">
 
-                        <!-- 4 Category Mini-Cards -->
+                        <!-- 4 Category Mini-Cards (Clean Blade Syntax) -->
                         <div class="grid grid-cols-4 gap-3 h-36">
-                            <?php foreach (['Academic Performance', 'Self-Efficacy', 'Initiative', 'Motivation'] as $cat): ?>
-                                <?php
-                                $pct = $categoryPercentages[$cat] ?? 0;
-                                $isTop = ($topCategory === $cat);
-                                ?>
-                                <div class="bg-white border-2 <?php echo $isTop ? 'border-[#FCD34D]' : 'border-gray-200'; ?> rounded-2xl p-3 text-center relative flex flex-col justify-center">
-                                    <?php if ($isTop): ?>
-                                        <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white border-2 border-[#FCD34D] text-[#D97706] text-[10px] font-extrabold px-3 py-0.5 rounded-full whitespace-nowrap shadow-sm">
-                                            ⭐ TOP
-                                        </span>
-                                    <?php endif; ?>
+                            @foreach (['Academic Performance', 'Self-Efficacy', 'Initiative', 'Motivation'] as $cat)
+                            @php
+                            $pct = $categoryPercentages[$cat] ?? 0;
+                            $isTop = ($topCategory === $cat);
+                            @endphp
+                            <div class="bg-white border-2 {{ $isTop ? 'border-[#FCD34D]' : 'border-gray-200' }} rounded-2xl p-3 text-center relative flex flex-col justify-center">
+                                @if ($isTop)
+                                <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white border-2 border-[#FCD34D] text-[#D97706] text-[10px] font-extrabold px-3 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                                    ⭐ TOP
+                                </span>
+                                @endif
 
-                                    <div class="text-2xl font-black text-gray-900 mb-2">{{ $pct }}%</div>
-                                    <div class="text-[9px] font-bold text-[#B91C1C] uppercase leading-tight tracking-wider">
-                                        <?php echo str_replace(' ', '<br>', $cat); ?>
-                                    </div>
+                                <div class="text-2xl font-black text-gray-900 mb-2">{{ $pct }}%</div>
+                                <div class="text-[9px] font-bold text-[#B91C1C] uppercase leading-tight tracking-wider">
+                                    {!! str_replace(' ', '<br>', $cat) !!}
                                 </div>
-                            <?php endforeach; ?>
+                            </div>
+                            @endforeach
                         </div>
 
                         <!-- Second Best / Growth Block -->
@@ -130,7 +137,7 @@
 
                 <!-- Dashboard Button -->
                 <div class="mt-10 text-center">
-                    <a href="/dashboard" class="inline-block bg-[#0B1120] hover:bg-black text-white font-bold py-3.5 px-12 rounded-full transition shadow-md hover:shadow-lg text-lg">
+                    <a href="{{ route('dashboard') }}" class="inline-block bg-[#0B1120] hover:bg-black text-white font-bold py-3.5 px-12 rounded-full transition shadow-md hover:shadow-lg text-lg">
                         Return to Dashboard
                     </a>
                 </div>

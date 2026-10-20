@@ -73,6 +73,10 @@
                         <?php echo e(__('Study Materials')); ?>
 
                     </a>
+                    <a href="<?php echo e(route('student.assessment-history')); ?>" class="px-3 py-2 rounded-lg text-sm font-semibold transition <?php echo e(request()->routeIs('student.assessment-history') ? 'bg-red-50 text-red-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'); ?>">
+                        <?php echo e(__('Assessment History')); ?>
+
+                    </a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -196,6 +200,10 @@
         </a>
         <a href="<?php echo e(route('reviewers.index')); ?>" class="block px-3 py-2 rounded-lg text-base font-semibold <?php echo e(request()->routeIs('reviewers.*') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50'); ?>">
             <?php echo e(__('Study Materials')); ?>
+
+        </a>
+        <a href="<?php echo e(route('student.assessment-history')); ?>" class="block px-3 py-2 rounded-lg text-base font-semibold <?php echo e(request()->routeIs('student.assessment-history') ? 'bg-red-50 text-red-800' : 'text-gray-800 hover:bg-gray-50'); ?>">
+            <?php echo e(__('Assessment History')); ?>
 
         </a>
         <?php endif; ?>
