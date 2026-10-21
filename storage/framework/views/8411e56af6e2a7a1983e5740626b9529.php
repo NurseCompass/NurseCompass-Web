@@ -139,4 +139,4 @@
         sendBtn.disabled = false;
         sendBtn.classList.remove('opacity-50', 'cursor-wait');
     });
-</script><?php /**PATH C:\laragon\www\NurseCompass-Web\resources\views/components/chat-bubble.blade.php ENDPATH**/ ?>
+</script><?php /**PATH /var/www/capstone/NurseCompass-Web/resources/views/components/chat-bubble.blade.php ENDPATH**/ ?>

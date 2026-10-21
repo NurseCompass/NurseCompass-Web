@@ -231,4 +231,4 @@
             </div>
         </div>
     </div>
-</nav><?php /**PATH C:\laragon\www\NurseCompass-Web\resources\views/layouts/navigation.blade.php ENDPATH**/ ?>
+</nav><?php /**PATH /var/www/capstone/NurseCompass-Web/resources/views/layouts/navigation.blade.php ENDPATH**/ ?>

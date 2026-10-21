@@ -47,9 +47,9 @@ class QuizController extends Controller
     {
         $sections = [
             'academic-performance' => 'Academic Performance',
-            'self-efficacy'        => 'Self-Efficacy',
-            'initiative'           => 'Initiative',
-            'motivation'           => 'Motivation',
+            'self-efficacy' => 'Self-Efficacy',
+            'initiative' => 'Initiative',
+            'motivation' => 'Motivation',
         ];
 
         if (!array_key_exists($slug, $sections)) {
@@ -80,117 +80,119 @@ class QuizController extends Controller
 
     public function submitQuiz(Request $request)
     {
-        $score = 0;
-        $totalQuestions = 0;
         $user = Auth::user();
-        $detailedAnswers = [];
-        $categoryStats = [];
 
+        // 1. Collect submitted option IDs
+        $optionIds = [];
         foreach ($request->all() as $key => $value) {
-            if (str_starts_with($key, 'question_')) {
-                $totalQuestions++;
-                $selectedOption = Option::find($value);
-                $question = $selectedOption ? $selectedOption->question : null;
-
-                if ($question && $selectedOption) {
-                    $section = $question->section;
-                    if (!isset($categoryStats[$section])) {
-                        $categoryStats[$section] = ['score' => 0, 'total' => 0];
-                    }
-                    $categoryStats[$section]['total']++;
-
-                    $isCorrect = (bool) $selectedOption->is_correct;
-                    if ($isCorrect) {
-                        $score++;
-                        $categoryStats[$section]['score']++;
-                    }
-
-                    $correctOption = $question->options()->where('is_correct', 1)->first();
-
-                    $detailedAnswers[] = [
-                        'question' => $question->question_text,
-                        'section' => $section,
-                        'student_answer' => $selectedOption->option_text,
-                        'is_correct' => $isCorrect,
-                        'correct_answer' => $correctOption ? $correctOption->option_text : 'Unknown'
-                    ];
-                }
+            if (str_starts_with($key, 'question_') && !empty($value)) {
+                $optionIds[] = $value;
             }
         }
 
-        // 1. Calculate individual category percentages from submitted questions
-        $academicPct = isset($categoryStats['Academic Performance']) && $categoryStats['Academic Performance']['total'] > 0
-            ? round(($categoryStats['Academic Performance']['score'] / $categoryStats['Academic Performance']['total']) * 100) : 0;
+        // 2. BATCH FETCH: 1 fast SQL query for all selected options, questions, and answers
+        $selectedOptions = Option::whereIn('id', $optionIds)
+            ->with(['question.options'])
+            ->get();
 
-        $efficacyPct = isset($categoryStats['Self-Efficacy']) && $categoryStats['Self-Efficacy']['total'] > 0
-            ? round(($categoryStats['Self-Efficacy']['score'] / $categoryStats['Self-Efficacy']['total']) * 100) : 0;
+        $score = 0;
+        $totalQuestions = count($selectedOptions);
+        $detailedAnswers = [];
+        $categoryStats = [];
 
-        $initiativePct = isset($categoryStats['Initiative']) && $categoryStats['Initiative']['total'] > 0
-            ? round(($categoryStats['Initiative']['score'] / $categoryStats['Initiative']['total']) * 100) : 0;
+        foreach ($selectedOptions as $selectedOption) {
+            $question = $selectedOption->question;
+            if (!$question)
+                continue;
 
-        $motivationPct = isset($categoryStats['Motivation']) && $categoryStats['Motivation']['total'] > 0
-            ? round(($categoryStats['Motivation']['score'] / $categoryStats['Motivation']['total']) * 100) : 0;
+            $section = $question->section ?? 'General Assessment';
+            if (!isset($categoryStats[$section])) {
+                $categoryStats[$section] = ['score' => 0, 'total' => 0];
+            }
+            $categoryStats[$section]['total']++;
 
-        $prediction = "Pending";
-        $personalizedNote = "Could not generate personalized note at this time.";
-        $categoryPercentages = [
-            'Academic Performance' => $academicPct,
-            'Self-Efficacy'        => $efficacyPct,
-            'Initiative'           => $initiativePct,
-            'Motivation'           => $motivationPct,
-        ];
+            $isCorrect = (bool) $selectedOption->is_correct;
+            if ($isCorrect) {
+                $score++;
+                $categoryStats[$section]['score']++;
+            }
 
-        $topCategory = 'Academic Performance';
-        $topPct = 0;
-        $secondCategory = 'Self-Efficacy';
-        $secondPct = 0;
-        $lowestCategory = 'Motivation';
-        $lowestPct = 0;
+            $correctOption = $question->options->firstWhere('is_correct', 1);
+
+            $detailedAnswers[] = [
+                'question' => $question->question_text,
+                'section' => $section,
+                'student_answer' => $selectedOption->option_text,
+                'is_correct' => $isCorrect,
+                'correct_answer' => $correctOption ? $correctOption->option_text : 'Unknown'
+            ];
+        }
+
+        // 3. Instant Category Percentages in PHP (Fixes 0% display bug)
+        $categoryPercentages = [];
+        foreach (['Academic Performance', 'Self-Efficacy', 'Initiative', 'Motivation'] as $cat) {
+            $catScore = $categoryStats[$cat]['score'] ?? 0;
+            $catTotal = $categoryStats[$cat]['total'] ?? 0;
+            $categoryPercentages[$cat] = $catTotal > 0 ? round(($catScore / $catTotal) * 100) : 0;
+        }
+
+        arsort($categoryPercentages);
+        $rankedCategories = array_keys($categoryPercentages);
+
+        $topCategory = $rankedCategories[0] ?? 'Academic Performance';
+        $topPct = $categoryPercentages[$topCategory];
+
+        $secondCategory = $rankedCategories[1] ?? 'Self-Efficacy';
+        $secondPct = $categoryPercentages[$secondCategory];
+
+        $lowestCategory = end($rankedCategories) ?: 'Motivation';
+        $lowestPct = $categoryPercentages[$lowestCategory];
+
+        $overallPct = $totalQuestions > 0 ? round(($score / $totalQuestions) * 100) : 0;
+        $prediction = $overallPct >= 75 ? "Workforce Ready" : "Needs Improvement";
+        $personalizedNote = "Your assessment score has been recorded successfully.";
+
+        // 4. Send compact sample (max 10 missed questions) so Llama responds in ~5 seconds
+        $incorrectAnswers = array_values(array_filter($detailedAnswers, fn($a) => !$a['is_correct']));
+        $sampleAnswers = array_slice($incorrectAnswers, 0, 10);
+        if (empty($sampleAnswers)) {
+            $sampleAnswers = array_slice($detailedAnswers, 0, 5);
+        }
 
         try {
-            $mlResponse = Http::timeout(60)->post(env('PYTHON_SERVER_URL') . '/api/predict-readiness', [
+            $pythonUrl = env('PYTHON_SERVER_URL', 'http://127.0.0.1:5001');
+            $endpoint = rtrim($pythonUrl, '/') . '/api/predict-readiness';
+
+            $mlResponse = Http::timeout(60)->post('http://127.0.0.1:5001/api/predict-readiness', [
                 'score' => $score,
                 'total_questions' => $totalQuestions,
                 'category_scores' => $categoryStats,
-                'detailed_answers' => $detailedAnswers
+                'detailed_answers' => $sampleAnswers
             ]);
 
             if ($mlResponse->successful()) {
                 $mlData = $mlResponse->json();
-                $prediction = $mlData['prediction'] ?? 'Unknown';
-                $personalizedNote = $mlData['personalized_note'] ?? 'No note generated.';
-                if (!empty($mlData['category_percentages'])) {
-                    $categoryPercentages = $mlData['category_percentages'];
-                    $academicPct = $categoryPercentages['Academic Performance'] ?? $academicPct;
-                    $efficacyPct = $categoryPercentages['Self-Efficacy'] ?? $efficacyPct;
-                    $initiativePct = $categoryPercentages['Initiative'] ?? $initiativePct;
-                    $motivationPct = $categoryPercentages['Motivation'] ?? $motivationPct;
-                }
-                $topCategory = $mlData['top_category'] ?? 'Academic Performance';
-                $topPct = $mlData['top_pct'] ?? 0;
-                $secondCategory = $mlData['second_category'] ?? 'Self-Efficacy';
-                $secondPct = $mlData['second_pct'] ?? 0;
-                $lowestCategory = $mlData['lowest_category'] ?? 'Motivation';
-                $lowestPct = $mlData['lowest_pct'] ?? 0;
+                $prediction = $mlData['prediction'] ?? $prediction;
+                $personalizedNote = $mlData['personalized_note'] ?? $personalizedNote;
             }
         } catch (\Exception $e) {
-            // ML server fallback
+            // Fallback gracefully
         }
 
-        // 2. Save complete breakdown directly into MySQL database
+        // 5. Save complete breakdown directly into MySQL database
         QuizResult::create([
-            'user_id'              => $user->id,
-            'year_level'           => $user->year_level,
-            'section'              => $request->input('section', 'Comprehensive'),
-            'score'                => $score,
-            'total_questions'      => $totalQuestions,
-            'academic_performance' => $academicPct,
-            'self_efficacy'        => $efficacyPct,
-            'initiative'           => $initiativePct,
-            'motivation'           => $motivationPct,
-            'top_category'         => $topCategory,
-            'prediction'           => $prediction,
-            'personalized_note'    => $personalizedNote,
+            'user_id' => $user->id,
+            'year_level' => $user->year_level,
+            'section' => $request->input('section', 'Comprehensive'),
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'academic_performance' => $categoryPercentages['Academic Performance'],
+            'self_efficacy' => $categoryPercentages['Self-Efficacy'],
+            'initiative' => $categoryPercentages['Initiative'],
+            'motivation' => $categoryPercentages['Motivation'],
+            'top_category' => $topCategory,
+            'prediction' => $prediction,
+            'personalized_note' => $personalizedNote,
         ]);
 
         return view('quiz.results', compact(
@@ -227,9 +229,9 @@ class QuizController extends Controller
         // Read saved columns or fallback to overall average if viewing old test runs
         $categoryPercentages = [
             'Academic Performance' => $result->academic_performance > 0 ? $result->academic_performance : $overallPct,
-            'Self-Efficacy'        => $result->self_efficacy > 0 ? $result->self_efficacy : $overallPct,
-            'Initiative'           => $result->initiative > 0 ? $result->initiative : $overallPct,
-            'Motivation'           => $result->motivation > 0 ? $result->motivation : $overallPct,
+            'Self-Efficacy' => $result->self_efficacy > 0 ? $result->self_efficacy : $overallPct,
+            'Initiative' => $result->initiative > 0 ? $result->initiative : $overallPct,
+            'Motivation' => $result->motivation > 0 ? $result->motivation : $overallPct,
         ];
 
         arsort($categoryPercentages);

@@ -65,4 +65,4 @@
 
 </body>
 
-</html><?php /**PATH C:\laragon\www\NurseCompass-Web\resources\views/layouts/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /var/www/capstone/NurseCompass-Web/resources/views/layouts/app.blade.php ENDPATH**/ ?>

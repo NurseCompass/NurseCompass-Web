@@ -81,6 +81,7 @@ Route::middleware(['auth', CheckRole::class . ':student'])->group(function () {
     Route::get('/quiz/{slug}', [App\Http\Controllers\QuizController::class, 'showQuiz']);
     Route::post('/quiz/submit', [App\Http\Controllers\QuizController::class, 'submitQuiz']);
     Route::get('/quiz/result/{id}', [App\Http\Controllers\QuizController::class, 'showResult'])->name('quiz.result');
+    Route::get('/quiz/{id}/get-prediction', [App\Http\Controllers\QuizController::class, 'getMlPrediction'])->name('quiz.get-prediction');
 });
 
 // --- STUDENT ROUTES ---
