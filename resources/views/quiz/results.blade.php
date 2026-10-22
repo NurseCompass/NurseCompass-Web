@@ -9,7 +9,8 @@
         /** @var array $categoryPercentages */
         /** @var int|string $score */
         /** @var int|string $totalQuestions */
-        /** @var string $personalizedNote */
+        /** @var string|null $personalizedNote */
+        /** @var string|null $assessmentInterpretation */
 
         $topCategory = $topCategory ?? 'Academic Performance';
         $topPct = $topPct ?? 0;
@@ -20,7 +21,7 @@
         $categoryPercentages = $categoryPercentages ?? [];
     @endphp
 
-    <!-- 1. The Header Banner (Full-width styling) -->
+    <!-- Header Banner -->
     <div class="bg-[#FCD34D] w-full py-4 border-b border-[#F59E0B]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="font-extrabold text-2xl md:text-3xl text-[#B91C1C] leading-tight tracking-wide">
@@ -29,17 +30,14 @@
         </div>
     </div>
 
-    <!-- 2. Main Content Area -->
+    <!-- Main Content Area -->
     <div class="py-10 bg-white min-h-screen">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
 
-            <!-- Assessment Container -->
             <div class="bg-white rounded-3xl border-2 border-gray-200 p-8 lg:p-10 flex flex-col shadow-sm">
 
-                <!-- Title -->
                 <h2 class="text-3xl font-extrabold text-[#B91C1C] text-center mb-8">Assessment Complete!</h2>
 
-                <!-- 2-Column Layout Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-grow">
 
                     <!-- LEFT COLUMN -->
@@ -63,34 +61,17 @@
                             <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $topCategory }} - {{ $topPct }}%</h3>
                             <p class="text-gray-600 text-sm leading-relaxed">
                                 Your foundations in this domain are exceptionally solid. Strong theoretical knowledge
-                                and core execution are the backbone of excellent clinical practice — you are well
-                                positioned to lead in the ward.
+                                and core execution are the backbone of excellent clinical practice.
                             </p>
                         </div>
 
-                        <!-- Llama Prediction Block -->
+                        <!-- Machine Learning Prediction Block -->
                         <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 flex-grow">
-                            <p class="text-gray-500 text-[11px] font-bold uppercase tracking-widest mb-3">Machine
-                                Learning Prediction</p>
-                            <div id="ml-prediction-container">
-                                @if(!isset($personalizedNote) || $personalizedNote === 'GENERATING' || empty($personalizedNote))
-                                    <div class="flex items-center gap-3 text-gray-500 py-1">
-                                        <svg class="animate-spin h-5 w-5 text-[#B91C1C]" xmlns="http://www.w3.org/2000/svg"
-                                            fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <span class="text-sm font-medium italic text-gray-600">Generating AI Clinical
-                                            Insights...</span>
-                                    </div>
-                                @else
-                                    <p class="text-gray-600 leading-relaxed italic text-sm">
-                                        "{!! $personalizedNote !!}"
-                                    </p>
-                                @endif
+                            <p class="text-gray-500 text-[11px] font-bold uppercase tracking-widest mb-3">
+                                Machine Learning Prediction
+                            </p>
+                            <div class="text-gray-600 leading-relaxed italic text-sm">
+                                "{!! $personalizedNote !!}"
                             </div>
                         </div>
                     </div>
@@ -98,7 +79,7 @@
                     <!-- RIGHT COLUMN -->
                     <div class="flex flex-col gap-6">
 
-                        <!-- 4 Category Mini-Cards (Clean Blade Syntax) -->
+                        <!-- 4 Category Mini-Cards (Sums to exactly 100%) -->
                         <div class="grid grid-cols-4 gap-3 h-36">
                             @foreach (['Academic Performance', 'Self-Efficacy', 'Initiative', 'Motivation'] as $cat)
                                 @php
@@ -124,8 +105,9 @@
 
                         <!-- Second Best / Growth Block -->
                         <div class="bg-white border-2 border-gray-200 rounded-2xl p-6">
-                            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1">Second Best ·
-                                Growth Opportunities</p>
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1">
+                                Second Best · Growth Opportunities
+                            </p>
                             <h3 class="text-lg font-bold text-gray-900 mb-3">{{ $secondCategory }} - {{ $secondPct }}%
                             </h3>
 
@@ -145,30 +127,23 @@
                                     <span>Reflect on clinical experiences to identify your specific areas of personal
                                         growth.</span>
                                 </li>
-                                <li class="flex items-start gap-2">
-                                    <span class="text-gray-400 font-bold">•</span>
-                                    <span>Set small, achievable skill goals during each clinical rotation to build
-                                        momentum.</span>
-                                </li>
                             </ul>
                         </div>
 
-                        <!-- Interpretation Block -->
+                        <!-- Your Assessment Interpretation Block -->
                         <div class="bg-[#0B1120] text-white rounded-2xl p-6 flex-grow">
                             <h3 class="text-sm font-bold mb-3 tracking-wide">Your Assessment Interpretation</h3>
-                            <p class="text-[13px] text-gray-300 leading-relaxed mb-3">
-                                Based on your responses, your strongest area is <span
-                                    class="text-white font-bold">{{ $topCategory }} {{ $topPct }}%</span>, indicating
-                                solid alignment with core clinical competencies. Your second strength lies in <span
-                                    class="text-white font-bold">{{ $secondCategory }} ({{ $secondPct }}%)</span>.
-                            </p>
-                            <p class="text-[13px] text-gray-300 leading-relaxed">
-                                Your area with the most room for targeted development is <span
-                                    class="text-[#FCD34D] font-bold">{{ $lowestCategory }} ({{ $lowestPct }}%)</span>.
-                                Focusing on the key action points above for your second-best area can help you build
-                                momentum toward a well-rounded clinical readiness profile. Remember — each assessment is
-                                a snapshot in time, not a ceiling.
-                            </p>
+
+                            @if($prediction === 'Needs Improvement' || $prediction === 'NOT YET READY')
+                                <p class="text-sm font-bold mb-2 tracking-wide text-[#FCD34D] uppercase">NOT YET READY.</p>
+                            @else
+                                <p class="text-sm font-bold mb-2 tracking-wide text-green-400 uppercase">WORKFORCE READY.
+                                </p>
+                            @endif
+
+                            <div class="text-[13px] text-gray-300 leading-relaxed italic">
+                                "{!! $assessmentInterpretation !!}"
+                            </div>
                         </div>
                     </div>
 
@@ -185,25 +160,4 @@
             </div>
         </div>
     </div>
-
-    @if(!isset($personalizedNote) || $personalizedNote === 'GENERATING' || empty($personalizedNote))
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const resultId = "{{ $result->id ?? $id ?? '' }}";
-                if (!resultId) return;
-
-                fetch(`/quiz/${resultId}/get-prediction`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const container = document.getElementById('ml-prediction-container');
-                        if (data.personalized_note && container) {
-                            container.innerHTML = `<p class="text-gray-600 leading-relaxed italic text-sm">"${data.personalized_note}"</p>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching ML prediction:', error);
-                    });
-            });
-        </script>
-    @endif
 </x-app-layout>
